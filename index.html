@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Axelrehab</title>
+  <meta name="description" content="Guidad daglig rehab för nacke, axel och nervirritation.">
+  <meta name="theme-color" content="#0b1020" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#f2f5fa" media="(prefers-color-scheme: light)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Axelrehab">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="icons/favicon-32.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <!-- ============ IDAG ============ -->
+    <section class="view active" id="view-today">
+      <header class="page-head">
+        <div>
+          <div class="eyebrow" id="today-date"></div>
+          <h1 class="page-title" id="greeting">Hej!</h1>
+        </div>
+      </header>
+
+      <div class="hero">
+        <div class="hero-top">
+          <div>
+            <div class="streak-num" id="streak-num">0</div>
+            <div class="streak-label" id="streak-label">dagar i rad</div>
+          </div>
+          <div class="week-ring" aria-label="Veckomål">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="42" fill="none" stroke-width="10"/>
+              <circle class="ring-fg" id="week-ring-fg" cx="50" cy="50" r="42" fill="none" stroke-width="10" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="263.9"/>
+            </svg>
+            <div class="ring-text"><b id="week-count">0/5</b><span>veckomål</span></div>
+          </div>
+        </div>
+        <div class="week-dots" id="week-dots"></div>
+        <p class="hero-quote" id="hero-quote"></p>
+      </div>
+
+      <button class="btn-primary" id="start-full">
+        <div style="text-align:left">
+          <div id="start-full-title">Starta dagens pass</div>
+          <div class="meta" id="start-full-meta">11 övningar · ca 13 min</div>
+        </div>
+        <span class="play"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg></span>
+      </button>
+      <div class="btn-row">
+        <button class="btn-secondary" id="start-micro">
+          <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5M9 2h6"/></svg></span>
+          <div style="flex:1"><b>Mikropaus</b><span id="micro-meta">2 min vid skrivbordet</span></div>
+        </button>
+      </div>
+
+      <div class="card alert-card hidden" id="adapt-card">
+        <h3>Passet verkar reta upp</h3>
+        <p class="sub" id="adapt-text"></p>
+      </div>
+
+      <div class="card install-card hidden" id="install-card">
+        <div class="row between"><h3>Installera på iPhone</h3><button class="link-btn" id="install-dismiss">Stäng</button></div>
+        <ol>
+          <li>Öppna sidan i <b>Safari</b>.</li>
+          <li>Tryck på <b>Dela</b>-knappen (fyrkant med pil).</li>
+          <li>Välj <b>Lägg till på hemskärmen</b>.</li>
+        </ol>
+      </div>
+
+      <h2 class="section-title">Dagens incheckning</h2>
+      <div class="card">
+        <div class="sub">Hur känns det just nu? Skatta varje dag – då ser du trenden.</div>
+        <div class="slider-block">
+          <div class="slider-head"><label for="r-numb">Domning i pekfingret</label><span class="val"><span id="v-numb">0</span><small>/10</small></span></div>
+          <input type="range" id="r-numb" class="r-numb" min="0" max="10" step="1" value="0">
+          <div class="slider-hint"><span>Ingen</span><span>Värsta tänkbara</span></div>
+        </div>
+        <div class="slider-block">
+          <div class="slider-head"><label for="r-pain">Smärta / stelhet nacke–axel</label><span class="val"><span id="v-pain">0</span><small>/10</small></span></div>
+          <input type="range" id="r-pain" class="r-pain" min="0" max="10" step="1" value="0">
+          <div class="slider-hint"><span>Ingen</span><span>Värsta tänkbara</span></div>
+        </div>
+        <textarea class="note-input" id="checkin-note" rows="1" placeholder="Anteckning (valfritt) – sömn, jobb, triggers…"></textarea>
+        <div class="checkin-foot">
+          <span class="checkin-status" id="checkin-status">Inte incheckad idag</span>
+          <button class="chip-btn accent" id="checkin-save">Spara</button>
+        </div>
+      </div>
+
+      <h2 class="section-title">Dagens tips</h2>
+      <div class="card tip-card">
+        <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></svg></span>
+        <p id="tip-text"></p>
+      </div>
+    </section>
+
+    <!-- ============ FRAMSTEG ============ -->
+    <section class="view" id="view-progress">
+      <header class="page-head">
+        <div><div class="eyebrow">Uppföljning</div><h1 class="page-title">Framsteg</h1></div>
+      </header>
+
+      <div class="stat-grid">
+        <div class="stat"><div class="k">Nuvarande svit</div><div class="v" id="s-streak">0<small>d</small></div></div>
+        <div class="stat"><div class="k">Längsta svit</div><div class="v" id="s-best">0<small>d</small></div></div>
+        <div class="stat"><div class="k">Pass totalt</div><div class="v" id="s-total">0</div></div>
+        <div class="stat"><div class="k">Träningstid</div><div class="v" id="s-mins">0<small>min</small></div></div>
+      </div>
+
+      <div class="card">
+        <div class="row between">
+          <h3>Symtom över tid</h3>
+          <div class="seg" id="range-seg">
+            <button data-r="14">14 d</button><button data-r="30" class="on">30 d</button><button data-r="90">90 d</button>
+          </div>
+        </div>
+        <div class="sub" id="trend-text">Skatta dagligen för att se din trend.</div>
+        <div class="legend">
+          <span><i style="background:var(--s-numb)"></i>Domning pekfinger</span>
+          <span><i style="background:var(--s-pain)"></i>Smärta nacke–axel</span>
+        </div>
+        <div class="chart-box" id="chart-box"></div>
+        <button class="link-btn" id="table-toggle">Visa som tabell</button>
+        <div id="chart-table" class="hidden"></div>
+      </div>
+
+      <div class="card heat-wrap">
+        <h3>Träningskalender</h3>
+        <div class="sub">Senaste 16 veckorna</div>
+        <div class="heat" id="heat"></div>
+        <div class="heat-legend">
+          <i style="background:var(--heat-0)"></i>Vila
+          <i style="background:var(--heat-1)"></i>Mikropaus
+          <i style="background:var(--heat-2)"></i>Pass
+          <i style="background:var(--heat-3)"></i>Pass + mikropaus
+        </div>
+        <div class="heat-info" id="heat-info"></div>
+      </div>
+
+      <h2 class="section-title">Utmärkelser</h2>
+      <div class="badges" id="badges"></div>
+    </section>
+
+    <!-- ============ INFO & INSTÄLLNINGAR ============ -->
+    <section class="view" id="view-info">
+      <header class="page-head">
+        <div><div class="eyebrow">Kunskap & inställningar</div><h1 class="page-title">Info</h1></div>
+      </header>
+
+      <div class="card alert-card">
+        <h3>Sök vård om du får</h3>
+        <ul class="list">
+          <li><span class="bul">⚠️</span>Tilltagande svaghet i arm eller hand, t.ex. att du tappar saker.</li>
+          <li><span class="bul">⚠️</span>Domning som sprider sig, blir konstant eller kommer i båda armarna.</li>
+          <li><span class="bul">🚨</span>Påverkan på gång, balans, blåsa eller tarm – ring 112 / sök akut.</li>
+          <li><span class="bul">⚠️</span>Svår nattlig smärta, feber eller oförklarlig viktnedgång.</li>
+          <li><span class="bul">ℹ️</span>Ingen förbättring efter 4–6 veckor – boka fysioterapeut eller ring 1177.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Om dina besvär</h3>
+        <p class="sub" style="margin-top:6px">Domning i pekfingret kommer ofta från en irriterad nervrot i nacken (C6–C7) eller från att nervbanorna kläms längs vägen genom halsens muskler, under nyckelbenet eller bröstmuskeln. Programmet fokuserar därför på att avlasta nacken, öppna upp bröst och skuldra och låta nerven glida fritt.</p>
+        <ul class="list" style="margin-top:12px">
+          <li><span class="bul">🟢</span><span><b>Grönt:</b> Lätt drag eller pirr som släpper direkt – fortsätt.</span></li>
+          <li><span class="bul">🟡</span><span><b>Gult:</b> Pirr som sitter kvar några minuter – minska rörelsen eller välj Skonsam nivå.</span></li>
+          <li><span class="bul">🔴</span><span><b>Rött:</b> Ökad domning eller smärta som sitter kvar till nästa dag – hoppa över övningen och kontakta vården.</span></li>
+        </ul>
+      </div>
+
+      <h2 class="section-title">Inställningar</h2>
+      <div class="card">
+        <div class="setting"><div class="lbl">Ditt namn<small>Används i hälsningen</small></div><input type="text" id="set-name" placeholder="Namn" autocomplete="given-name"></div>
+        <div class="setting"><div class="lbl">Nivå<small>Skonsam = färre rep, kortare håll</small></div>
+          <div class="seg" id="set-level"><button data-v="skonsam">Skonsam</button><button data-v="normal">Normal</button></div></div>
+        <div class="setting"><div class="lbl">Veckomål<small>Antal dagar med pass per vecka</small></div>
+          <select id="set-goal"><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></div>
+        <div class="setting"><label for="set-voice">Röstguide<small>Uppläsning på svenska</small></label><label class="switch"><input type="checkbox" id="set-voice"><span></span></label></div>
+        <div class="setting"><label for="set-sound">Ljudsignaler</label><label class="switch"><input type="checkbox" id="set-sound"><span></span></label></div>
+        <div class="setting"><div class="lbl">Utseende</div>
+          <div class="seg" id="set-theme"><button data-v="auto">Auto</button><button data-v="light">Ljust</button><button data-v="dark">Mörkt</button></div></div>
+      </div>
+
+      <div class="card">
+        <h3>Daglig påminnelse</h3>
+        <p class="sub">Lägger in en återkommande händelse i iPhone-kalendern med en notis.</p>
+        <div class="setting" style="border-top:0"><label for="set-remind">Tid</label><select id="set-remind"></select></div>
+        <button class="chip-btn accent" id="remind-btn" style="width:100%">Lägg till i kalendern</button>
+      </div>
+
+      <div class="card">
+        <h3>Övningar i dagens pass</h3>
+        <p class="sub">Stäng av övningar som inte passar dig just nu.</p>
+        <div id="ex-toggles" style="margin-top:8px"></div>
+      </div>
+
+      <div class="card">
+        <h3>Säkerhetskopia</h3>
+        <p class="sub">Din data sparas bara på telefonen. Exportera då och då så du inte tappar historiken.</p>
+        <div class="row" style="margin-top:12px; flex-wrap:wrap">
+          <button class="chip-btn" id="export-btn">Exportera</button>
+          <label class="chip-btn" style="cursor:pointer">Importera<input type="file" id="import-file" accept="application/json,.json" class="sr-only"></label>
+          <button class="chip-btn danger" id="reset-btn">Rensa allt</button>
+        </div>
+      </div>
+
+      <p class="disclaimer">Axelrehab är ett träningsstöd och ersätter inte bedömning av läkare eller fysioterapeut. Övningarna är vanliga, skonsamma övningar vid nack- och nervbesvär – anpassa efter hur du mår.</p>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <div class="tabbar-inner">
+      <button class="tab active" data-view="today">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>Idag</button>
+      <button class="tab" data-view="progress">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5M4 19h16M8 15l4-4 3 3 5-6"/></svg>Framsteg</button>
+      <button class="tab" data-view="info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>Info</button>
+    </div>
+  </nav>
+
+  <!-- Spelaren -->
+  <div class="player hidden" id="player" role="dialog" aria-modal="true"></div>
+  <canvas id="confetti"></canvas>
+
+  <script src="exercises.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
